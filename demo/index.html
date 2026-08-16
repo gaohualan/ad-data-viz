@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AD-PointViz — Autonomous Driving Point Cloud Visualization</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a2e; font-family: -apple-system, sans-serif; }
+
+    #app { width: 100vw; height: 100vh; position: relative; }
+
+    #canvas-container {
+      position: absolute; inset: 0;
+    }
+
+    #top-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 12px 20px;
+      background: linear-gradient(180deg, rgba(26,26,46,0.95), rgba(26,26,46,0));
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 10; pointer-events: none;
+    }
+
+    #top-bar h1 {
+      font-size: 18px; font-weight: 700; color: #e2e8f0; letter-spacing: -0.02em;
+    }
+    #top-bar h1 span { color: #2563eb; }
+
+    #top-bar .stats {
+      font-size: 12px; color: #64748b; font-family: 'JetBrains Mono', monospace;
+    }
+
+    #controls {
+      position: absolute; top: 60px; right: 16px;
+      width: 280px;
+      background: rgba(26,26,46,0.92);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    #controls .section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      color: #64748b; letter-spacing: 0.08em; margin-bottom: 8px;
+    }
+
+    #controls .control-group { margin-bottom: 16px; }
+    #controls .control-group:last-child { margin-bottom: 0; }
+
+    #controls button {
+      background: #1e293b; border: 1px solid #334155;
+      color: #e2e8f0; padding: 6px 12px; border-radius: 6px;
+      cursor: pointer; font-size: 13px; transition: all 0.15s;
+    }
+    #controls button:hover { background: #334155; border-color: #475569; }
+    #controls button.active { background: #2563eb; border-color: #3b82f6; }
+
+    #controls .btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    #timeline {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 12px 20px;
+      background: linear-gradient(0deg, rgba(26,26,46,0.95), rgba(26,26,46,0));
+      display: flex; align-items: center; gap: 12px;
+      z-index: 10;
+    }
+
+    #timeline button {
+      background: #1e293b; border: 1px solid #334155;
+      color: #e2e8f0; width: 36px; height: 36px;
+      border-radius: 6px; cursor: pointer; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    #timeline button:hover { background: #334155; }
+    #timeline button.active { background: #2563eb; border-color: #3b82f6; }
+
+    #frame-info {
+      font-size: 13px; color: #64748b; font-family: 'JetBrains Mono', monospace;
+      min-width: 80px; text-align: center;
+    }
+
+    #loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(26,26,46,0.9); z-index: 100;
+      flex-direction: column; gap: 12px;
+    }
+    #loading.hidden { display: none; }
+    #loading .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid #334155;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    #loading p { color: #64748b; font-size: 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #stats-container {
+      position: absolute; top: 60px; left: 16px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="top-bar">
+      <h1>AD-<span>PointViz</span></h1>
+      <div class="stats" id="stats-text">Loading...</div>
+    </div>
+
+    <div id="stats-container"></div>
+
+    <div id="controls">
+      <div class="control-group">
+        <div class="section-title">View Mode</div>
+        <div class="btn-group">
+          <button id="btn-3d" class="active">3D</button>
+          <button id="btn-bev">BEV</button>
+          <button id="btn-follow">Follow</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="section-title">Color Mode</div>
+        <div class="btn-group">
+          <button id="btn-intensity" class="active">Intensity</button>
+          <button id="btn-height">Height</button>
+          <button id="btn-semantic">Semantic</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="section-title">Point Size: <span id="size-value">2.0</span></div>
+        <input type="range" id="point-size" min="0.5" max="8" step="0.5" value="2" style="width:100%;">
+      </div>
+
+      <div class="control-group">
+        <div class="section-title">Layers</div>
+        <div class="btn-group">
+          <button id="btn-grid" class="active">Grid</button>
+          <button id="btn-bbox" class="active">BBox</button>
+          <button id="btn-trajectory">Trajectory</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="section-title">Data</div>
+        <input type="file" id="file-input" accept=".bin" style="display:none;">
+        <button id="btn-load" style="width:100%;">Load KITTI .bin File</button>
+      </div>
+    </div>
+
+    <div id="timeline">
+      <button id="btn-prev" title="Previous Frame">◀</button>
+      <button id="btn-play" title="Play/Pause">▶</button>
+      <button id="btn-next" title="Next Frame">▶</button>
+      <span id="frame-info">0 / 0</span>
+    </div>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>Initializing AD-PointViz...</p>
+    </div>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>
