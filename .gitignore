@@ -1,0 +1,24 @@
+node_modules/
+dist/
+.DS_Store
+*.local
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+*.tsbuildinfo
+
+# Test
+coverage/
+
+# Sample data (large files)
+demo/public/sample-data/*.bin
+demo/public/sample-data/*.pcd
+!demo/public/sample-data/.gitkeep
