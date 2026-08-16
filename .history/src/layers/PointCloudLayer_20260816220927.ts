@@ -39,6 +39,7 @@ export class PointCloudLayer {
   }
 
   setPointSize(size: number): void {
+    this.pointSize = size
     this.material.uniforms.uPointSize.value = size
   }
 

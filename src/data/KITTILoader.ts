@@ -1,4 +1,4 @@
-import type { BoundingBox, Frame, ObjectType, PointCloudData, LoaderOptions } from '../types'
+import type { BoundingBox, Frame, ObjectType, LoaderOptions } from '../types'
 import { BinaryReader } from './BinaryReader'
 
 const KITTI_POINT_SIZE = 4 // x, y, z, intensity (each float32)

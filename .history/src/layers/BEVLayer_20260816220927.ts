@@ -78,8 +78,8 @@ export class BEVLayer {
     const colors: number[] = []
 
     for (const box of boxes) {
-      const { x: w, z: l } = box.dimensions
-      const { x: cx, z: cz } = box.center
+      const { x: w, y: h, z: l } = box.dimensions
+      const { x: cx, y: cy, z: cz } = box.center
       const ry = box.rotationY
 
       const cosR = Math.cos(ry)

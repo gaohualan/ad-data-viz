@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { MeshBVH, computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh'
+import { computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh'
 
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
