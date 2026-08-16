@@ -1,0 +1,14 @@
+Place KITTI .bin and .txt files here.
+
+Download from: http://www.cvlibs.net/datasets/kitti/
+
+Example files:
+- 000001.bin  (point cloud, ~1.8MB)
+- 000001.txt  (labels, ~1KB)
+
+Or generate synthetic data:
+```python
+import numpy as np
+points = np.random.randn(120000, 4).astype(np.float32)
+points.tofile('demo.bin')
+```

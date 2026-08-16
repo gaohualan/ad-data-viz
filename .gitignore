@@ -1,5 +1,4 @@
 node_modules/
-dist/
 .DS_Store
 *.local
 .env
@@ -11,7 +10,7 @@ dist/
 .idea/
 *.swp
 *.swo
-
+.history/
 # Build
 *.tsbuildinfo
 
