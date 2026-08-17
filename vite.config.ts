@@ -1,11 +1,12 @@
-import { defineConfig } from 'vite'
-import { resolve } from 'path'
+import { defineConfig } from "vite";
+import { resolve } from "path";
 
 export default defineConfig({
-  root: 'demo',
+  base: "./",
+  root: "demo",
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      "@": resolve(__dirname, "src"),
     },
   },
   server: {
@@ -13,11 +14,11 @@ export default defineConfig({
     open: true,
   },
   build: {
-    outDir: '../dist',
+    outDir: "../dist",
     emptyOutDir: true,
-    target: 'es2022',
+    target: "es2022",
   },
   worker: {
-    format: 'es',
+    format: "es",
   },
-})
+});
