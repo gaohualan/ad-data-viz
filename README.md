@@ -3,6 +3,9 @@
 > Autonomous driving point cloud visualization engine based on Three.js + WebGL.
 > Supports KITTI dataset, custom GLSL shaders, octree LOD, and InstancedMesh optimization.
 
+## online demo
+<a href="https://gaohualan.github.io/ad-data-viz/dist/index.html" title="online">demo</a>
+
 ## Features
 
 - **KITTI Data Loading** — Binary `.bin` point cloud parsing + label file parsing
