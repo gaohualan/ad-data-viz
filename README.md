@@ -1,4 +1,4 @@
-# AD-PointViz
+# AD-PointCloud-Viz
 
 > Autonomous driving point cloud visualization engine based on Three.js + WebGL.
 > Supports KITTI dataset, custom GLSL shaders, octree LOD, and InstancedMesh optimization.
